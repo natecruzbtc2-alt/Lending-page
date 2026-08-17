@@ -776,64 +776,43 @@ footer{background:var(--navy);padding:40px 48px;display:flex;align-items:center;
 })();
 
 // ── WHATSAPP NOTIFICATION ──────────────────────────────────────────────────────
-async function sendWhatsApp(name, phone, amount, time, platform, email) {
-  const msg = `🔔 *New VaultX Recovery Lead*\n\n` +
-    `👤 *Name:* ${name}\n` +
-    `📞 *Phone:* ${phone || 'Not provided'}\n` +
-    `✉️ *Email:* ${email || 'Not provided'}\n` +
-    `🏦 *Platform:* ${platform || 'Not provided'}\n` +
-    `💸 *Amount Lost:* ${amount}\n` +
-    `🕐 *Best Time:* ${time}\n` +
-    `📅 *Submitted:* ${new Date().toLocaleString('en-GB')}`;
-
-  // Using CallMeBot WhatsApp API (free)
-  // To activate: send "I allow callmebot to send me messages" to +34 644 71 73 41 on WhatsApp first
-  // Then replace YOUR_CALLMEBOT_API_KEY below
-  const API_KEY = 'YOUR_CALLMEBOT_API_KEY';
-  const encoded = encodeURIComponent(msg);
-  try {
-    await fetch(`https://api.callmebot.com/whatsapp.php?phone=447427504992&text=${encoded}&apikey=${API_KEY}`);
-  } catch(e) { console.log('WhatsApp notify failed:', e); }
-}
-
-// ── FORM HANDLERS ──────────────────────────────────────────────────────────────
-const ACCESS_KEY = '057d0e2f-4729-41c6-8fc0-20015fad7a68';
-
 async function submitForm(name, phone, amount, time, platform, email, formEl, successEl, btnEl) {
   btnEl.disabled = true;
   btnEl.textContent = 'Sending...';
 
-  const payload = {
-    access_key: ACCESS_KEY,
-    subject: `🔥 New Lead — ${name} — Lost ${amount}`,
-    from_name: 'VaultX Recovery',
-    message: [
-      'NEW CONSULTATION REQUEST',
-      '========================',
-      `Name:     ${name}`,
-      `Phone:    ${phone || 'Not provided'}`,
-      `Email:    ${email || 'Not provided'}`,
-      `Platform: ${platform || 'Not provided'}`,
-      `Amount:   ${amount}`,
-      `Contact:  ${time}`,
-      '========================',
-      `Time: ${new Date().toLocaleString('en-GB')}`
-    ].join('\n')
-  };
-
   try {
     const res = await fetch('https://api.web3forms.com/submit', {
-      method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload)
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        access_key: '057d0e2f-4729-41c6-8fc0-20015fad7a68',
+        subject: '🔥 New VaultX Lead — ' + name + ' — Lost ' + amount,
+        from_name: 'VaultX Recovery',
+        message: [
+          'NEW CONSULTATION REQUEST',
+          '========================',
+          'Name:     ' + name,
+          'Phone:    ' + (phone || 'Not provided'),
+          'Email:    ' + (email || 'Not provided'),
+          'Platform: ' + (platform || 'Not provided'),
+          'Amount:   ' + amount,
+          'Contact:  ' + time,
+          '========================',
+          'Time: ' + new Date().toLocaleString('en-GB')
+        ].join('\n')
+      })
     });
     const data = await res.json();
     if(data.success){
       formEl.style.display = 'none';
       successEl.style.display = 'block';
-      await sendWhatsApp(name, phone, amount, time, platform, email);
-    } else throw new Error();
-  } catch {
+    } else {
+      throw new Error(data.message);
+    }
+  } catch(err) {
+    console.error('Form error:', err);
     btnEl.disabled = false;
-    btnEl.textContent = btnEl.dataset.original;
+    btnEl.textContent = btnEl.dataset.original || 'Submit';
     alert('Something went wrong. Please call us directly on +44 7427 504992');
   }
 }
@@ -895,4 +874,3 @@ document.querySelectorAll('input, select').forEach(el=>{
 </script>
 </body>
 </html>
-
