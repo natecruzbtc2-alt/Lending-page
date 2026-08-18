@@ -319,15 +319,16 @@ footer{background:var(--navy);padding:40px 48px;display:flex;align-items:center;
       <div class="hero-form-title">Speak to an Advisor</div>
       <div class="hero-form-sub">Leave your details and we will call you within 2 hours. Completely free.</div>
       <form id="hero-form">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:0">
         <div class="hf-field">
           <input type="text" id="hf-name" placeholder="Your full name" required autocomplete="off">
         </div>
         <div class="hf-field">
+          <input type="email" id="hf-email" placeholder="Your email address" required autocomplete="off">
+        </div>
+        <div class="hf-field">
           <input type="tel" id="hf-phone" placeholder="Your phone number" required autocomplete="off">
         </div>
-        </div>
-        <div class="hf-field" style="margin-top:12px">
+        <div class="hf-field">
           <select id="hf-amount" required>
             <option value="" disabled selected>Amount lost (approx.)</option>
             <option>Under $5,000</option>
@@ -827,7 +828,8 @@ document.getElementById('hero-form').addEventListener('submit', async function(e
     document.getElementById('hf-phone').value,
     document.getElementById('hf-amount').value,
     document.getElementById('hf-time').value,
-    '', '',
+    '',
+    document.getElementById('hf-email').value,
     document.getElementById('hf-view'),
     document.getElementById('hf-success'),
     btn
